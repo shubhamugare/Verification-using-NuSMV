@@ -1,0 +1,30 @@
+MODULE main
+VAR
+  pc0 : counter_cell(TRUE, pc3.val);
+  pc1 : counter_cell(FALSE, pc0.val);
+  pc2 : counter_cell(FALSE, pc1.val);
+  pc3 : counter_cell(FALSE, pc2.val);
+
+DEFINE
+	legal := (pc0.grd_en & !pc1.grd_en & !pc2.grd_en & !pc3.grd_en) | 
+ 			(!pc0.grd_en & pc1.grd_en & !pc2.grd_en & !pc3.grd_en) |
+ 			(!pc0.grd_en & !pc1.grd_en & pc2.grd_en & !pc3.grd_en) |
+ 			(!pc0.grd_en & !pc1.grd_en & !pc2.grd_en & pc3.grd_en)? TRUE : FALSE;
+
+MODULE counter_cell(is_first, pval)
+VAR
+  val : 0 .. 4;
+ASSIGN
+  next(val) := case
+  			(is_first) & (pval = val): (val+1) mod 5;
+  			(!is_first) & (pval != val): pval;
+  			TRUE: val;
+  			esac;
+DEFINE
+	grd_en :=	case
+  			(is_first) & (pval = val): TRUE;
+  			(!is_first) & (pval != val): TRUE;
+  			TRUE: FALSE;
+  			esac; 
+
+--defined symbols different from variables by being dynamically typed else same

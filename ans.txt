@@ -1,0 +1,23 @@
+ read_model -i __.smv
+ flatten_hierarchy
+ encode_variables
+ build_model
+ pick_state -i
+ simulate -i -k 10
+ check_ltlspec -p " G (x >= 0)"
+ 
+ ---no deadlock (at least one enabled)
+ 	check_ltlspec -p " G ( pc0.grd_en | pc1.grd_en | pc2.grd_en | pc3.grd_en)"
+ 
+ --safety 
+  	check_ltlspec -p " legal -> G(legal)"	
+
+ --liveness (each taken infinitely)
+ 	check_ltlspec -p "((G F  pc0.grd_en) & (G F pc1.grd_en) & (G F pc2.grd_en) & (G F pc3.grd_en))"
+
+ --self-stabilization (legal happens finally)
+ 	check_ltlspec -p " F ( legal )"
+
+--fairness assumptions?
+
+--synchronous model 	
